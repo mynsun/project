@@ -1,0 +1,28 @@
+name: remote ssh deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to remote server via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd ~/your_project_directory
+            git pull origin main
+            source ~/.bashrc
+            pip install -r requirements.txt
+            # 예: streamlit을 백그라운드에서 실행 (포트 8501)
+            pkill -f "streamlit run" || true
+            nohup streamlit run streamlit_app.py --server.port 8501 --server.headless true > streamlit.log 2>&1 &
