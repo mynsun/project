@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  streamlit:
+    build: .
+    container_name: streamlit_app
+    ports:
+      - "8501:8501"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./:/opt/streamlit_app
+    restart: always

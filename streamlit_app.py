@@ -11,9 +11,9 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 DAILY_GOAL = {
-    "calories": 2300,
-    "protein": 56,
-    "carbs": 300,
+    "calories": 2100,
+    "protein": 50,
+    "carbs": 260,
     "fat": 70
 }
 
