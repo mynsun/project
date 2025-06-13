@@ -8,8 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Deploy to remote server via SSH
         uses: appleboy/ssh-action@v0.1.10
@@ -24,4 +23,4 @@ jobs:
             source ~/.bashrc
             pip install -r requirements.txt
             pkill -f "streamlit run" || true
-            nohup streamlit run streamlit_app.py --server.port 8501 --server.headless true > streamlit.log 2>&1 &
+            nohup streamlit run app/streamlit_app.py --server.port 8501 --server.headless true > streamlit.log 2>&1 &
