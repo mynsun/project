@@ -5,12 +5,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-  deploy:
+  build:
+    name: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to remote server via SSH
+      - name: executing remote ssh commands using ssh-actions
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.HOST }}
@@ -18,9 +17,4 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            cd ~/your_project_directory
-            git pull origin main
-            source ~/.bashrc
-            pip install -r requirements.txt
-            pkill -f "streamlit run" || true
-            nohup streamlit run app/streamlit_app.py --server.port 8501 --server.headless true > streamlit.log 2>&1 &
+            ./deploy.sh
