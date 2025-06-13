@@ -23,6 +23,5 @@ jobs:
             git pull origin main
             source ~/.bashrc
             pip install -r requirements.txt
-            # 예: streamlit을 백그라운드에서 실행 (포트 8501)
             pkill -f "streamlit run" || true
             nohup streamlit run streamlit_app.py --server.port 8501 --server.headless true > streamlit.log 2>&1 &
