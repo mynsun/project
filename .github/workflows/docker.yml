@@ -50,3 +50,4 @@ jobs:
             docker run -d --restart always --name streamlit_app -p 8501:8501 ${{ env.DOCKER_IMAGE_NAME }}:latest
             echo "--- Cleaning up unused Docker images ---"
             docker system prune -f
+
