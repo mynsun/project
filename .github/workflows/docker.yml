@@ -6,7 +6,7 @@ on:
 
 env:
   DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+  DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_PASSWORD }}
   DOCKER_IMAGE_NAME: mynsunxx/streamlitapp
   EC2_HOST: ${{ secrets.HOST }}
   EC2_USERNAME: ${{ secrets.USERNAME }}
