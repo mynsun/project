@@ -15,5 +15,5 @@ clean:
 	docker system prune -a -f
 
 push:
-	docker tag streamlit_app mynsunxx/streamlit-app:latest
-	docker push mynsunxx/streamlit-app:latest
+	docker tag streamlit_app mynsunxx/streamlitapp:latest
+	docker push mynsunxx/streamlitapp:latest
