@@ -1,10 +1,9 @@
-# docker-compose.yml
 version: '3.7'
 
 services:
   streamlit:
     build: .
-    container_name: streamlit_app
+    container_name: streamlitapp
     ports:
       - "8501:8501"
     environment:

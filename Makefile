@@ -1,4 +1,3 @@
-# Makefile
 build:
 	docker-compose build
 
@@ -15,5 +14,5 @@ clean:
 	docker system prune -a -f
 
 push:
-	docker tag streamlit_app mynsunxx/streamlitapp:latest
+	docker tag streamlitapp mynsunxx/streamlitapp:latest
 	docker push mynsunxx/streamlitapp:latest
