@@ -1,22 +1,19 @@
+# Makefile
 build:
-	docker build -t streamlit-app .
+	docker-compose build
 
 run:
-	docker run -it -d --name streamlit-container -p 8501:8501 \
-		-v $(PWD):/app \
-		streamlit-app
+	docker-compose up -d
 
-exec:
-	docker exec -it streamlit-container /bin/bash
+stop:
+	docker-compose down
 
-ps:
-	docker ps -a
+logs:
+	docker-compose logs -f
 
-img:
-	docker images
+clean:
+	docker system prune -a -f
 
-rm:
-	docker rm -f $$(docker ps -aq)
-
-rmi:
-	docker rmi -f $$(docker images -q)
+push:
+	docker tag streamlit_app mynsunxx/streamlit-app:latest
+	docker push mynsunxx/streamlit-app:latest
