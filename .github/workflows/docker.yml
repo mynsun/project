@@ -12,6 +12,7 @@ env:
   EC2_USERNAME: ${{ secrets.USERNAME }}
   EC2_KEY: ${{ secrets.KEY }}
   EC2_PORT: ${{ secrets.PORT }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}   # 추가: OpenAI Key 환경변수 등록
 
 jobs:
   build-push-deploy:
@@ -40,6 +41,7 @@ jobs:
           username: ${{ env.EC2_USERNAME }}
           key: ${{ env.EC2_KEY }}
           port: ${{ env.EC2_PORT }}
+          envs: OPENAI_API_KEY   # 추가: EC2 원격 환경에도 전달
           script: |
             echo "--- Pulling Latest App Image ---"
             docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest
@@ -47,7 +49,6 @@ jobs:
             docker stop streamlit_app || true
             docker rm streamlit_app || true
             echo "--- Running New App Container ---"
-            docker run -d --restart always --name streamlit_app -p 8501:8501 ${{ env.DOCKER_IMAGE_NAME }}:latest
+            docker run -d --restart always --name streamlit_app -p 8501:8501 -e OPENAI_API_KEY=$OPENAI_API_KEY ${{ env.DOCKER_IMAGE_NAME }}:latest
             echo "--- Cleaning up unused Docker images ---"
             docker system prune -f
-
