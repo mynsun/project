@@ -15,4 +15,4 @@ spec:
   selector:
     app: streamlitapp
   externalIPs:
-    - aws ip
+    - 13.124.198.232
