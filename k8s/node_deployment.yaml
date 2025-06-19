@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streamlitapp
+  labels:
+    app: streamlitapp
+spec:
+  replicas: 1   # pod
+  selector:
+    matchLabels:
+      app: streamlitapp
+  template:
+    metadata:
+      labels:
+        app: streamlitapp
+    spec:
+      containers:
+        - name: streamlitapp
+          image: mynsunxx/streamlitapp:latest
+          ports:
+            - containerPort: 8502 # container port(pod port)
