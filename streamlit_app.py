@@ -6,18 +6,18 @@ from dotenv import load_dotenv
 import os
 import random
 
-BG_COLOR = "#DCF0F0"
+# BG_COLOR = "#DCF0F0"
 
-st.markdown(
-    f"""
-    <style>
-    .stApp {{
-        background-color: {BG_COLOR};
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# st.markdown(
+#     f"""
+#     <style>
+#     .stApp {{
+#         background-color: {BG_COLOR};
+#     }}
+#     </style>
+#     """,
+#     unsafe_allow_html=True
+# )
 
 st.set_page_config(page_title="AI 영양 관리 시스템", layout="wide")
 
