@@ -6,12 +6,14 @@ from dotenv import load_dotenv
 import os
 import random
 
+BG_COLOR = "#DCF0F0"
+
 st.markdown(
-    """
+    f"""
     <style>
-    .stApp {
-        background-color: #f0f2f6; /* 원하는 색상 코드로 바꿔주세요 */
-    }
+    .stApp {{
+        background-color: {BG_COLOR};
+    }}
     </style>
     """,
     unsafe_allow_html=True
