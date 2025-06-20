@@ -6,6 +6,17 @@ from dotenv import load_dotenv
 import os
 import random
 
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #f0f2f6; /* 원하는 색상 코드로 바꿔주세요 */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.set_page_config(page_title="AI 영양 관리 시스템", layout="wide")
 
 load_dotenv()
@@ -295,7 +306,7 @@ def main():
         registered_meals = {"breakfast": False, "lunch": False, "dinner": False}
         meal_details = []
 
-        emojis = ["🍰", "프록시", "🍩", "🍪", "🍣", "🍕", "🍔", "🥞", "🧁", "🍦", "🍎"]
+        emojis = ["🍰", "🍩", "🍪", "🍣", "🍕", "🍔", "🥞", "🧁", "🍦", "🍎"]
         loading_emoji = random.choice(emojis)
         loading_placeholder = st.empty()
         loading_placeholder.info(f"영양 분석 중입니다 . . . {loading_emoji} {loading_emoji}")
