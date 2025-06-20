@@ -49,6 +49,6 @@ jobs:
             docker stop streamlit_app || true
             docker rm streamlit_app || true
             echo "--- Running New App Container ---"
-            docker run -d --restart always --name streamlit_app -p 8502:8502 -e OPENAI_API_KEY=$OPENAI_API_KEY ${{ env.DOCKER_IMAGE_NAME }}:latest
+            docker run -d --restart always --name streamlit_app -p 8501:8501 -e OPENAI_API_KEY=$OPENAI_API_KEY ${{ env.DOCKER_IMAGE_NAME }}:latest
             echo "--- Cleaning up unused Docker images ---"
             docker system prune -f
