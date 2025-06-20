@@ -5,7 +5,7 @@ services:
     build: .
     container_name: streamlitapp
     ports:
-      - "8502:8502"
+      - "8501:8501"
     env_file:
       - .env
     environment:

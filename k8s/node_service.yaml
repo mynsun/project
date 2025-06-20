@@ -8,8 +8,8 @@ spec:
   type: NodePort  
   ports:
     - nodePort : 30801
-      port: 8502       
-      targetPort: 8502    
+      port: 8501       
+      targetPort: 8501    
       protocol: TCP
       name: http
   selector:
