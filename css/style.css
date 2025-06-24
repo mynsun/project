@@ -78,7 +78,7 @@ nav ul li a:hover {
 
 /* 히어로 섹션 */
 .hero {
-    background: linear-gradient(135deg, #e0f2f7 0%, #c8e6c9 100%);
+    background: #D0EEDF;
     text-align: center;
     padding: 100px 20px;
     color: #2c3e50;
