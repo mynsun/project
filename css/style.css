@@ -244,7 +244,7 @@ nav ul li a:hover {
 
 /* 마지막 CTA 섹션 */
 .final-cta {
-    background: linear-gradient(135deg, #4CAF50 0%, #8bc34a 100%);
+    background: #D0EEDF;
     padding: 80px 20px;
     text-align: center;
     color: white;
@@ -364,7 +364,7 @@ footer .footer-links a:hover {
 }
 
 #streamlitbox {
-    background: linear-gradient(135deg, #e0f2f7 0%, #c8e6c9 100%);
+    background: #D0EEDF;
 }
 
 .main-content {
