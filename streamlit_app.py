@@ -248,11 +248,6 @@ def main():
             unsafe_allow_html=True
     )
 
-    if "meals" in st.session_state:
-        st.write("🍽 등록된 음식 목록:")
-    for meal in st.session_state.meals:
-        st.write(f"{meal['meal_type']} - {meal['food_name']}")
-
     if 'recommendations' not in st.session_state:
         st.session_state.recommendations = {}
     if 'side_dish_active' not in st.session_state:
