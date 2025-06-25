@@ -246,7 +246,23 @@ def main():
             <meta http-equiv="refresh" content="0; url='http://15.164.56.89:30800/'" />
             """,
             unsafe_allow_html=True
-    )
+        )
+        try:  
+            response = requests.get("http://13.124.198.232:3000/docs")
+            if response.status_code == 200:
+                st.session_state.meals = response.json()
+                st.success("음식 목록 불러오기 성공!")
+            else:
+                st.error(f"서버 오류: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            st.error(f"서버 요청 실패: {e}")
+
+        # 세션에 저장된 음식 목록 보여주기
+        if "meals" in st.session_state:
+            st.write("🍽 등록된 음식 목록:")
+        for meal in st.session_state.meals:
+            st.write(f"{meal['meal_type']} - {meal['food_name']}")
+
 
     if 'recommendations' not in st.session_state:
         st.session_state.recommendations = {}
