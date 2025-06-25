@@ -240,14 +240,14 @@ def main():
 
     if st.button("📸 사진으로 음식 등록", key="photo_upload"):
     # JavaScript를 이용한 리다이렉트
-    components.html(
-        """
-        <script>
-            window.location.href = 'http://15.164.56.89:30800/';
-        </script>
-        """,
-        height=0
-    )
+        components.html(
+            """
+            <script>
+                window.location.href = 'http://15.164.56.89:30800/';
+            </script>
+            """,
+            height=0
+        )
 
     if 'recommendations' not in st.session_state:
         st.session_state.recommendations = {}
