@@ -7,19 +7,6 @@ import os
 import random
 import streamlit.components.v1 as components
 
-# BG_COLOR = "#DCF0F0"
-
-# st.markdown(
-#     f"""
-#     <style>
-#     .stApp {{
-#         background-color: {BG_COLOR};
-#     }}
-#     </style>
-#     """,
-#     unsafe_allow_html=True
-# )
-
 st.set_page_config(page_title="AI 영양 관리 시스템", layout="wide")
 
 components.html("""
@@ -49,23 +36,19 @@ DAILY_GOAL = {
 
 def parse_gpt_response(response: str) -> dict:
     try:
-        # JSON 형식 추출 (중괄호로 감싸진 부분)
         json_match = re.search(r'({[\s\S]*})', response)
         if not json_match:
             st.warning("GPT 응답에서 JSON 형식을 찾지 못했습니다. 응답을 확인해주세요.")
-            st.error(response)  # GPT 응답을 직접 보여줌
+            st.error(response)
             return None
         json_str = json_match.group(1)
-        # 작은 따옴표 → 큰 따옴표 변환
         json_str = json_str.replace("'", '"')
-        # 주석 및 불필요한 콤마 제거
         json_str = re.sub(r'(?m)//.*$', '', json_str)
         json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
-        # JSON 파싱
         return json.loads(json_str)
     except Exception as e:
         st.error(f"JSON 파싱 실패: {str(e)}")
-        st.error(f"원본 응답: {response}")  # 오류 발생 시 응답 전체를 보여줌
+        st.error(f"원본 응답: {response}")
         return None
 
 def get_nutrition_info(food_name: str) -> dict:
@@ -205,9 +188,7 @@ def get_recommendations_from_gpt(remaining, meal_type="general", cheat_mode=Fals
         - Calories: {remaining['calories']}kcal
         - Protein: {remaining['protein']}g
         - Carbs: {remaining['carbs']}g
-        - Fat: {remaining['fat']}g
-
-        Conditions:
+        - Fat: {remaining['fat']}g... Conditions:
         1. Total nutrition must not exceed remaining values
         2. {"Consider dinner if recommending lunch" if meal_type == "lunch" else "Realistic combinations"}
         3. All food names and meal names must be in Korean only. Do not use English.
@@ -257,12 +238,11 @@ def round1(x):
 def main():
     st.title("🍽️ 식단 관리 시스템")
 
+    # 사진으로 음식 등록 버튼: 현재 페이지 내에서 이동
     if st.button("📸 사진으로 음식 등록", key="photo_upload"):
-        st.components.v1.html(
-            "<script>window.open('http://15.164.56.89:30800/?from=streamlit','_blank')</script>",
-            height=0,
-    )
-    
+        st.experimental_set_query_params()
+        st.experimental_redirect("http://15.164.56.89:30800/")
+
     if 'recommendations' not in st.session_state:
         st.session_state.recommendations = {}
     if 'side_dish_active' not in st.session_state:
@@ -289,7 +269,7 @@ def main():
                 if st.button("반찬 추천받기", key=f"{meal_type}_btn", use_container_width=True):
                     emojis = ["🍰", "🍩", "🍪", "🍣", "🍕", "🍔", "🥞", "🧁", "🍦", "🍎"]
                     loading_emoji = random.choice(emojis)
-                    st.session_state.recommendations[meal_type] = None  # 로딩 상태 표시
+                    st.session_state.recommendations[meal_type] = None
                     st.session_state.side_dish_active = meal_type
                     recommendations = get_side_dish_recommission(main_dish)
                     st.session_state.recommendations[meal_type] = recommendations
@@ -346,7 +326,6 @@ def main():
                 meal_details.append((meal_type, meal_total))
         loading_placeholder.empty()
 
-        # 남은 섭취량 계산 (목표치를 넘으면 마이너스 값으로 표시)
         remaining = {
             nut: round1(DAILY_GOAL[nut] - total_nutrition[nut])
             for nut in DAILY_GOAL
@@ -367,7 +346,6 @@ def main():
                     st.write(f"**단백질**: {round1(nutrition['protein'])}g")
                     st.write(f"**탄수화물**: {round1(nutrition['carbs'])}g")
                     st.write(f"**지방**: {round1(nutrition['fat'])}g")
-
         st.divider()
         col1, col2 = st.columns(2)
         with col1:
