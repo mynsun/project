@@ -5,15 +5,158 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>건강 한 끼</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(120deg, #f8fafc 0%, #e0eafc 100%);
+            margin: 0;
+        }
+
+        header {
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(44, 62, 80, 0.06);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 42px;
+            margin-right: 13px;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4CAF50;
+            letter-spacing: -1px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 22px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #34495e;
+            font-weight: 500;
+            padding: 9px 16px;
+            border-radius: 6px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.active {
+            color: #4CAF50;
+        }
+
+        /* 환영 메시지 스타일 */
+        #welcomeArea {
+            display: none;
+            margin: 40px auto 22px auto;
+            max-width: 480px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(44, 62, 80, 0.10);
+            padding: 32px 18px 28px 18px;
+            text-align: center;
+            position: relative;
+            animation: fadeIn 1s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        #welcomeArea .emoji {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        #welcomeArea .username {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2a7ae2;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        #welcomeArea .subtitle {
+            font-size: 1.1rem;
+            color: #7b8a99;
+            margin-bottom: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 18px;
+        }
+
+        .hero iframe {
+            margin-top: 12px;
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(44, 62, 80, 0.10);
+            background: #fff;
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                padding: 0 8px;
+            }
+
+            .hero iframe {
+                width: 98vw;
+                min-width: 0;
+            }
+
+            #welcomeArea {
+                font-size: 1rem;
+                padding: 18px 4px;
+            }
+
+            .logo-img {
+                height: 28px;
+            }
+
+            .brand-name {
+                font-size: 1.05rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <header>
-        <div class="container">
+        <div class="container"
+            style="display: flex; align-items: center; justify-content: space-between; padding: 18px 0;">
             <a href="#" class="logo-area">
                 <img src="logo.png" alt="로고" class="logo-img">
                 <h1 class="brand-name">사이트 이름</h1>
@@ -23,20 +166,16 @@
                     <li><a href="#">홈</a></li>
                     <li><a href="#features">주요 기능</a></li>
                     <li><a href="food_diary.html">식단 관리</a></li>
-                    <li><a href="login.html">로그인 / 회원가입</a></li>
+                    <!-- <li><a href="login.html">로그인 / 회원가입</a></li> -->
                 </ul>
             </nav>
         </div>
     </header>
 
     <section class="hero">
-        <!-- <div class="container"> -->
-        <iframe src="http://15.164.56.89:30800/"
-            style="width: 60%; height: 80vh; min-width: 320px; min-height: 200px; border: none;"
-            allowfullscreen></iframe>
-        <!-- <p>오늘 먹은 음식을 사진으로 찍어 올리면, AI가 자동으로 영양 정보를 분석하고<br> 나에게 꼭 맞는 식단을 추천해 드립니다.</p> -->
-        <!-- <a href="#" class="cta-button1">지금 바로 시작하기</a> -->
-        </div>
+        <!-- 환영 메시지 영역 -->
+        <div id="welcomeArea"></div>
+        <iframe src="http://15.164.56.89:30800/" width="80%" height="500"></iframe>
     </section>
 
     <section id="features" class="features">
@@ -70,6 +209,22 @@
             </div>
         </div>
     </footer>
+
+    <!-- 로그인 성공 메시지 수신 및 환영 메시지 표시 스크립트 -->
+    <script>
+        window.addEventListener("message", function (event) {
+            // window.parent.postMessage({type: "login", username: "홍길동"}, "*");
+            if (event.data && event.data.type === "login" && event.data.username) {
+                var welcomeArea = document.getElementById('welcomeArea');
+                welcomeArea.innerHTML = `
+                    <span class="emoji">🎉</span>
+                    <span class="username">${event.data.username}님</span>
+                    <span class="subtitle">건강 한 끼에 오신 것을 환영합니다!</span>
+                `;
+                welcomeArea.style.display = "block";
+            }
+        });
+    </script>
 </body>
 
 </html>

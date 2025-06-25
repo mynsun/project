@@ -48,9 +48,10 @@ header .container {
 }
 
 .brand-name {
+    font-size: 1.5rem;
     font-weight: 700;
-    font-size: 1.5em;
-    margin: 0;
+    color: #4CAF50;
+    letter-spacing: -1px;
 }
 
 nav ul {
@@ -60,29 +61,42 @@ nav ul {
     display: flex;
 }
 
-nav ul li {
-    margin-left: 30px;
-}
-
 nav ul li a {
     text-decoration: none;
-    color: #555;
+    color: #34495e;
     font-weight: 500;
-    font-size: 1.05em;
-    transition: color 0.3s ease;
+    padding: 9px 16px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
 }
 
-nav ul li a:hover {
+nav ul li a:hover,
+nav ul li a.active {
     color: #4CAF50;
 }
 
 /* 히어로 섹션 */
 .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 18px;
+}
+
+.hero iframe {
+    margin-top: 12px;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(44, 62, 80, 0.10);
+    background: #fff;
+}
+
+.hero {
     background: #D0EEDF;
     text-align: center;
     padding: 100px 20px;
     color: #2c3e50;
-    min-height: 500px;
+    min-height: 300px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -127,7 +141,7 @@ nav ul li a:hover {
 
 /* 기능 섹션 */
 .features {
-    padding: 80px 0;
+    padding: 90px 0;
     text-align: center;
     background-color: #ffffff;
 }
@@ -591,4 +605,42 @@ footer .footer-links a:hover {
 
 .signup-link a:hover {
     text-decoration: underline;
+}
+
+.login-container {
+    width: 100%;
+}
+
+/* 환영 메시지 스타일 */
+#welcomeArea {
+    display: none;
+    margin: 40px auto 22px auto;
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(44, 62, 80, 0.10);
+    padding: 32px 18px 28px 18px;
+    text-align: center;
+    position: relative;
+    animation: fadeIn 1s cubic-bezier(.4, 0, .2, 1);
+}
+
+#welcomeArea .emoji {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 12px;
+}
+
+#welcomeArea .username {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2a7ae2;
+    margin-bottom: 8px;
+    display: block;
+}
+
+#welcomeArea .subtitle {
+    font-size: 1.1rem;
+    color: #7b8a99;
+    margin-bottom: 0;
 }
