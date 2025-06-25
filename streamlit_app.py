@@ -240,14 +240,12 @@ def main():
 
     # 사진으로 음식 등록 버튼: 현재 페이지 내에서 이동
     if st.button("📸 사진으로 음식 등록", key="photo_upload"):
-        components.html(
+        st.markdown(
             """
-            <script>
-                window.location.href = 'http://15.164.56.89:30800/';
-            </script>
+            <meta http-equiv="refresh" content="0; url='http://15.164.56.89:30800/'" />
             """,
-            height=0
-        )
+            unsafe_allow_html=True
+    )
 
     if 'recommendations' not in st.session_state:
         st.session_state.recommendations = {}
