@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 import random
 import streamlit.components.v1 as components
+import requests
 
 st.set_page_config(page_title="AI 영양 관리 시스템", layout="wide")
 
@@ -246,6 +247,11 @@ def main():
             """,
             unsafe_allow_html=True
     )
+
+    if "meals" in st.session_state:
+        st.write("🍽 등록된 음식 목록:")
+    for meal in st.session_state.meals:
+        st.write(f"{meal['meal_type']} - {meal['food_name']}")
 
     if 'recommendations' not in st.session_state:
         st.session_state.recommendations = {}
