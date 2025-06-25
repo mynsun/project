@@ -2,9 +2,12 @@ import streamlit as st
 import openai
 import json
 import re
+from dotenv import load_dotenv
+import os
 
-# OpenAI API 키 설정
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+load_dotenv()  # .env 파일의 변수들을 환경변수로 등록
+
+openai_api_key = os.environ.get("OPENAI_API_KEY")
 
 # JSON 파싱 함수
 def parse_gpt_response(response_text):
