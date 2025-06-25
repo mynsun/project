@@ -257,6 +257,28 @@ def main():
         except requests.exceptions.RequestException as e:
             st.error(f"서버 요청 실패: {e}")
 
+        # 식사 입력 섹션
+        st.subheader("아침 먹은 음식")
+        breakfast_input = st.text_input(
+            "아침에 먹은 음식을 입력하세요", 
+            key="breakfast_input",
+            value=st.session_state.get("breakfast_input", "")
+        )
+        
+        st.subheader("점심 먹은 음식")
+        lunch_input = st.text_input(
+            "점심에 먹은 음식을 입력하세요", 
+            key="lunch_input",
+            value=st.session_state.get("lunch_input", "")
+        )
+        
+        st.subheader("저녁 먹은 음식")
+        dinner_input = st.text_input(
+            "저녁에 먹은 음식을 입력하세요", 
+            key="dinner_input",
+            value=st.session_state.get("dinner_input", "")
+        )
+
         # 세션에 저장된 음식 목록 보여주기
         if "meals" in st.session_state:
             st.write("🍽 등록된 음식 목록:")
