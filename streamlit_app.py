@@ -238,8 +238,8 @@ def round1(x):
 def main():
     st.title("🍽️ 식단 관리 시스템")
 
+    # 사진으로 음식 등록 버튼: 현재 페이지 내에서 이동
     if st.button("📸 사진으로 음식 등록", key="photo_upload"):
-    # JavaScript를 이용한 리다이렉트
         components.html(
             """
             <script>
