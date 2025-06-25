@@ -16,6 +16,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px 0;
+    text-align: center;
 }
 
 /* 헤더 */
@@ -26,12 +27,14 @@ header {
     position: sticky;
     top: 0;
     z-index: 1000;
+    margin: 0 auto;
 }
 
 header .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 0 auto;
 }
 
 .logo-area {
