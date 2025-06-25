@@ -7,7 +7,6 @@ import os
 import random
 import streamlit.components.v1 as components
 import requests
-import time
 
 st.set_page_config(page_title="AI 영양 관리 시스템", layout="wide")
 
@@ -238,52 +237,32 @@ def round1(x):
         return x
 
 def main():
-    # FastAPI에서 음식 목록 받아와 각 입력칸에 추가 (중복 없이, 기존 값 유지)
-    FASTAPI_URL = "http://13.124.198.232:3000"  # 실제 FastAPI 주소로 변경
+    # st.title("🍽️ 식단 관리 시스템")
 
-    if 'last_meal_check' not in st.session_state:
-        st.session_state.last_meal_check = 0
-
-    current_time = time.time()
-    if current_time - st.session_state.last_meal_check > 5:
-        try:
-            response = requests.get(f"{FASTAPI_URL}/load-meal")
-            if response.status_code == 200:
-                meals = response.json()
-                for meal in meals:
-                    food = meal["food_name"]
-                    meal_type = meal["meal_type"]
-                    input_key = None
-                    if meal_type == "아침":
-                        input_key = "breakfast_input"
-                    elif meal_type == "점심":
-                        input_key = "lunch_input"
-                    elif meal_type == "저녁":
-                        input_key = "dinner_input"
-                    if input_key:
-                        current_val = st.session_state.get(input_key, "")
-                        foods = [f.strip() for f in current_val.split(",") if f.strip()]
-                        if food not in foods:
-                            foods.append(food)
-                            new_val = ", ".join(foods)
-                            st.session_state[input_key] = new_val
-            else:
-                st.error(f"서버 오류: {response.status_code}")
-        except Exception as e:
-            st.error(f"FastAPI 연동 오류: {e}")
-
-        st.session_state.last_meal_check = current_time
-
-    # 기존 입력란
-    st.title("🍽️ 식단 관리 시스템")
-
+    # 사진으로 음식 등록 버튼: 현재 페이지 내에서 이동
     if st.button("📸 사진으로 음식 등록", key="photo_upload"):
         st.markdown(
             """
-            <meta http-equiv="refresh" content="0; url='http://15.164.56.89:8502/'" />
+            <meta http-equiv="refresh" content="0; url='http://15.164.56.89:30800/'" />
             """,
             unsafe_allow_html=True
         )
+        try:  
+            response = requests.get("http://13.124.198.232:3000/load-meal")
+            if response.status_code == 200:
+                st.session_state.meals = response.json()
+                st.success("음식 목록 불러오기 성공!")
+            else:
+                st.error(f"서버 오류: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            st.error(f"서버 요청 실패: {e}")
+
+        # 세션에 저장된 음식 목록 보여주기
+        if "meals" in st.session_state:
+            st.write("🍽 등록된 음식 목록:")
+        for meal in st.session_state.meals:
+            st.write(f"{meal['meal_type']} - {meal['food_name']}")
+
 
     if 'recommendations' not in st.session_state:
         st.session_state.recommendations = {}
@@ -300,8 +279,7 @@ def main():
             meal_input = st.text_input(
                 f"{label} 메뉴",
                 key=f"{meal_type}_input",
-                placeholder="예: 계란후라이 2개",
-                value=st.session_state.get(f"{meal_type}_input", "")
+                placeholder="예: 계란후라이 2개"
             )
             meal_inputs[meal_type] = meal_input
         with cols[1]:
