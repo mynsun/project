@@ -64,8 +64,8 @@ jobs:
             echo "--- Navigating to project directory on EC2 ---"
 
             echo "--- Pulling Latest Streamlit & FastAPI App Images ---"
-            docker pull ${{ env.STREAMLIT_IMAGE_NAME }}:latest
-            docker pull ${{ env.FASTAPI_IMAGE_NAME }}:latest
+            docker pull ${{ env.STREAMLIT_IMAGE_NAME }}:latest # Streamlit 이미지 풀
+            docker pull ${{ env.FASTAPI_IMAGE_NAME }}:latest # FastAPI 이미지 풀
 
             echo "--- Stopping and Recreating Docker Compose Services ---"
 
@@ -73,6 +73,6 @@ jobs:
             docker-compose up -d --force-recreate
 
             echo "--- Cleaning up unused Docker images ---"
-            docker system prune -f # 사용하지 않는 Docker 이미지 정리 (디스크 공간 확보)
+            docker system prune -f
 
             echo "Deployment complete!"
