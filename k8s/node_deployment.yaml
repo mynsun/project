@@ -1,21 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: streamlitapp
+  name: nutrition-app-deployment
   labels:
-    app: streamlitapp
+    app: nutrition-app
 spec:
-  replicas: 1   # pod
+  replicas: 1
   selector:
     matchLabels:
-      app: streamlitapp
+      app: nutrition-app
   template:
     metadata:
       labels:
-        app: streamlitapp
+        app: nutrition-app
     spec:
       containers:
-        - name: streamlitapp
-          image: mynsunxx/streamlitapp:latest
+        - name: streamlit-container
+          image: mynsun/streamlitapp:latest
           ports:
-            - containerPort: 8501 # container port(pod port)
+            - containerPort: 8501
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-api-key-secret
+                  key: OPENAI_API_KEY
+        - name: fastapi-container
+          image: mynsun/fastapi-backend:latest
+          ports:
+            - containerPort: 3000

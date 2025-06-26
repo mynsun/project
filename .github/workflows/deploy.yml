@@ -64,8 +64,8 @@ jobs:
             echo "--- Navigating to project directory on EC2 ---"
 
             echo "--- Pulling Latest Streamlit & FastAPI App Images ---"
-            docker pull ${{ env.STREAMLIT_IMAGE_NAME }}:latest # Streamlit 이미지 풀
-            docker pull ${{ env.FASTAPI_IMAGE_NAME }}:latest # FastAPI 이미지 풀
+            docker pull ${{ env.STREAMLIT_IMAGE_NAME }}:latest
+            docker pull ${{ env.FASTAPI_IMAGE_NAME }}:latest
 
             echo "--- Stopping and Recreating Docker Compose Services ---"
 
