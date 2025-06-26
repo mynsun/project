@@ -367,6 +367,7 @@ def main():
         st.session_state.dinner_input = ""
 
     # Flag to ensure initial meal load from API happens only once per session
+    # This will trigger when the app first loads or refreshes (e.g., returning from another page).
     if 'meals_loaded_initial' not in st.session_state:
         st.session_state.meals_loaded_initial = False
     
@@ -376,11 +377,29 @@ def main():
         st.session_state.meals_loaded_initial = True
 
 
-    # "사진으로 음식 등록" button. When clicked, it will re-load meals.
-    if st.button("📸 사진으로 음식 등록", key="photo_upload"):
-        # Calling load_and_populate_meals() here will refresh the text inputs
-        # with the latest data from your FastAPI endpoint.
-        load_and_populate_meals()
+    # "사진으로 음식 등록" 버튼과 "FastAPI에서 음식 불러오기 (임시)" 버튼
+    col_upload_photo, col_load_api = st.columns(2)
+
+    with col_upload_photo:
+        if st.button("📸 사진으로 음식 등록", key="photo_upload"):
+            # 이 버튼을 클릭하면 외부 사진 등록 페이지로 이동합니다.
+            # 사용자가 해당 페이지에서 음식 등록 후 이 앱으로 돌아오면,
+            # 앱이 새로 로드되면서 load_and_populate_meals()가 다시 실행되어
+            # 최신 음식 목록을 불러와 입력 필드를 채울 것입니다.
+            st.markdown(
+                """
+                <meta http-equiv="refresh" content="0; url='http://15.164.56.89:8502/'" />
+                """,
+                unsafe_allow_html=True
+            )
+            # 중요: 위 markdown은 페이지를 즉시 새로고침하여 다른 URL로 이동시키므로,
+            # 이 코드 이후에 오는 Python 로직(예: requests.get)은 현재 페이지에서 실행되지 않습니다.
+            # 데이터 로딩은 페이지 재방문 시 앱의 초기화 로직에 의해 처리됩니다.
+
+    with col_load_api:
+        # FastAPI에서 음식 데이터를 불러오는 임시 버튼 (테스트용)
+        if st.button("FastAPI에서 음식 불러오기 (임시)", key="load_from_fastapi_temp"):
+            load_and_populate_meals()
 
 
     # Initialize recommendation states
