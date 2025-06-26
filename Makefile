@@ -1,3 +1,7 @@
+.PHONY: build run stop logs clean push
+
+DOCKER_IMAGE_FULL_NAME = mynsunxx/streamlitapp:latest
+
 build:
 	docker-compose build
 
@@ -13,6 +17,5 @@ logs:
 clean:
 	docker system prune -a -f
 
-push:
-	docker tag streamlitapp mynsunxx/streamlitapp:latest
-	docker push mynsunxx/streamlitapp:latest
+push: build
+	docker push $(DOCKER_IMAGE_FULL_NAME)
