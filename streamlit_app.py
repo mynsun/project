@@ -8,10 +8,8 @@ import random
 import streamlit.components.v1 as components
 import requests
 
-# Set page configuration
-st.set_page_config(page_title="AI 영양 관리 시스템", layout="wide")
+st.set_page_config(page_title="AI 칼로리 분석", layout="wide")
 
-# JavaScript for handling photo results (existing code from user)
 components.html("""
 <script>
 window.addEventListener("message", function(event) {
@@ -24,15 +22,12 @@ window.addEventListener("message", function(event) {
 </script>
 """, height=0)
 
-# Load environment variables (ensure .env file with OPENAI_API_KEY exists)
 load_dotenv()
 
-# OpenAI client initialization
 client = openai.OpenAI(
     api_key=os.environ.get("OPENAI_API_KEY")
 )
 
-# Daily nutritional goals
 DAILY_GOAL = {
     "calories": 2200,
     "protein": 50,
@@ -46,21 +41,14 @@ def parse_gpt_response(response: str) -> dict:
     Handles common issues like single quotes and comments in JSON.
     """
     try:
-        # Attempt to find a JSON-like string within the response
         json_match = re.search(r'({[\s\S]*})', response)
         if not json_match:
             st.warning("GPT 응답에서 JSON 형식을 찾지 못했습니다. 응답을 확인해주세요.")
             st.error(response)
             return None
         json_str = json_match.group(1)
-
-        # Replace single quotes with double quotes for valid JSON
         json_str = json_str.replace("'", '"')
-        
-        # Remove single-line comments (//) that might be present in GPT's JSON output
         json_str = re.sub(r'(?m)//.*$', '', json_str)
-        
-        # Remove trailing commas before a closing brace or bracket, which are invalid in strict JSON
         json_str = re.sub(r',\s*([}\]])', r'\1', json_str)
         
         return json.loads(json_str)
@@ -119,12 +107,10 @@ def update_meal_input(meal_type: str, selected_dish: str):
     """
     Updates the meal input text area in session state with a selected side dish.
     """
-    # Ensure the session state key for the meal type exists and is a string
     if f"{meal_type}_input" not in st.session_state:
         st.session_state[f"{meal_type}_input"] = ""
 
     current_value = st.session_state.get(f"{meal_type}_input", "").strip()
-    # Check if the dish is already in the input to prevent duplicates
     if selected_dish not in current_value:
         new_value = f"{current_value}, {selected_dish}".strip(", ")
         st.session_state[f"{meal_type}_input"] = new_value
@@ -136,7 +122,6 @@ def get_recommendations_from_gpt(remaining: dict, meal_type: str = "general", ch
     """
     Generates meal recommendations (healthy or cheat) based on remaining nutrition goals.
     """
-    # Truncate floats to 1 decimal place for the prompt string to ensure consistency
     remaining_str = {k: round1(v) for k, v in remaining.items()}
 
     if cheat_mode:
@@ -275,29 +260,25 @@ def get_recommendations_from_gpt(remaining: dict, meal_type: str = "general", ch
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
-            # Using a higher temperature for more diverse recommendations
             temperature=0.7 
         )
-        loading_placeholder.empty() # Clear loading message
+        loading_placeholder.empty()
 
         result = parse_gpt_response(response.choices[0].message.content)
         valid_recommendations = []
         if result and "recommendations" in result:
             for rec in result["recommendations"]:
                 try:
-                    # Calculate total nutrition from menu items for validation and display
                     sum_cal = sum(float(item.get("calories", 0)) for item in rec.get("menu", []))
                     sum_pro = sum(float(item.get("protein", 0)) for item in rec.get("menu", []))
                     sum_carb = sum(float(item.get("carbs", 0)) for item in rec.get("menu", []))
                     sum_fat = sum(float(item.get("fat", 0)) for item in rec.get("menu", []))
 
-                    # Assign rounded totals to the recommendation dictionary
                     rec["total_calories"] = round1(sum_cal)
                     rec["total_protein"] = round1(sum_pro)
                     rec["total_carbs"] = round1(sum_carb)
                     rec["total_fat"] = round1(sum_fat)
 
-                    # Round individual menu item nutrition values
                     for item in rec.get("menu", []):
                         item["calories"] = round1(item.get("calories", 0))
                         item["protein"] = round1(item.get("protein", 0))
@@ -318,7 +299,7 @@ def round1(x):
     try:
         return round(float(x), 1)
     except (ValueError, TypeError):
-        return x # Return original value if conversion to float fails
+        return x 
 
 def load_and_populate_meals():
     """
@@ -330,7 +311,6 @@ def load_and_populate_meals():
         if response.status_code == 200:
             meals_from_api = response.json()
             
-            # Mapping Korean meal types to English keys for session state
             meal_type_map = {
                 "아침": "breakfast",
                 "점심": "lunch",
@@ -347,28 +327,23 @@ def load_and_populate_meals():
                 korean_meal_type = meal.get("meal_type")
                 food_name = meal.get("food_name")
                 
-                # Convert Korean meal type to English key
                 english_meal_type = meal_type_map.get(korean_meal_type)
 
                 if english_meal_type in temp_meal_inputs and food_name:
                     temp_meal_inputs[english_meal_type].append(food_name)
             
-            # Join the collected food names and update session state
             st.session_state.breakfast_input = ", ".join(temp_meal_inputs["breakfast"])
             st.session_state.lunch_input = ", ".join(temp_meal_inputs["lunch"])
             st.session_state.dinner_input = ", ".join(temp_meal_inputs["dinner"])
 
-            st.success("음식 목록을 성공적으로 불러왔습니다!")
-        else:
-            st.error(f"서버 오류 발생: {response.status_code}. 음식 목록을 불러오지 못했습니다.")
+        # else:
+        #     st.error(f"서버 오류 발생: {response.status_code}. 음식 목록을 불러오지 못했습니다.")
     except requests.exceptions.RequestException as e:
         st.error(f"서버 요청 실패: {e}. FastAPI 서버가 실행 중인지 확인하세요.")
 
 def main():
-    st.title("🍽️ AI 영양 관리 시스템")
+    st.title("🍽️ AI 칼로리 분석")
 
-    # Initialize session state variables for meal inputs if they don't exist.
-    # This is crucial for Streamlit to manage their state across reruns.
     if 'breakfast_input' not in st.session_state:
         st.session_state.breakfast_input = ""
     if 'lunch_input' not in st.session_state:
@@ -376,43 +351,29 @@ def main():
     if 'dinner_input' not in st.session_state:
         st.session_state.dinner_input = ""
 
-    # Flag to ensure initial meal load from API happens only once per session
-    # This will trigger when the app first loads or refreshes (e.g., returning from another page).
     if 'meals_loaded_initial' not in st.session_state:
         st.session_state.meals_loaded_initial = False
     
-    # Perform initial meal load if not already done for the current session
     if not st.session_state.meals_loaded_initial:
         load_and_populate_meals()
         st.session_state.meals_loaded_initial = True
 
-
-    # "사진으로 음식 등록" 버튼과 "FastAPI에서 음식 불러오기 (임시)" 버튼
     col_upload_photo, col_load_api = st.columns(2)
 
     with col_upload_photo:
         if st.button("📸 사진으로 음식 등록", key="photo_upload"):
-            # 이 버튼을 클릭하면 외부 사진 등록 페이지로 이동합니다.
-            # 사용자가 해당 페이지에서 음식 등록 후 이 앱으로 돌아오면,
-            # 앱이 새로 로드되면서 load_and_populate_meals()가 다시 실행되어
-            # 최신 음식 목록을 불러와 입력 필드를 채울 것입니다.
             st.markdown(
                 """
                 <meta http-equiv="refresh" content="0; url='http://15.164.56.89:8502/'" />
                 """,
                 unsafe_allow_html=True
             )
-            # 중요: 위 markdown은 페이지를 즉시 새로고침하여 다른 URL로 이동시키므로,
-            # 이 코드 이후에 오는 Python 로직(예: requests.get)은 현재 페이지에서 실행되지 않습니다.
-            # 데이터 로딩은 페이지 재방문 시 앱의 초기화 로직에 의해 처리됩니다.
 
     with col_load_api:
         # FastAPI에서 음식 데이터를 불러오는 임시 버튼 (테스트용)
         if st.button("FastAPI에서 음식 불러오기 (임시)", key="load_from_fastapi_temp"):
             load_and_populate_meals()
 
-
-    # Initialize recommendation states
     if 'recommendations' not in st.session_state:
         st.session_state.recommendations = {}
     if 'side_dish_active' not in st.session_state:
@@ -421,63 +382,51 @@ def main():
     meal_types = ["breakfast", "lunch", "dinner"]
     meal_labels = ["아침", "점심", "저녁"]
 
-    # Section for meal input fields (Breakfast, Lunch, Dinner)
     for i, (meal_type, label) in enumerate(zip(meal_types, meal_labels)):
         cols = st.columns([6, 1])
         with cols[0]:
-            # Use the session state variable directly as the value for st.text_input.
-            # Streamlit automatically updates st.session_state[f"{meal_type}_input"]
-            # when the user types in the text box.
             st.session_state[f"{meal_type}_input"] = st.text_input(
                 f"{label} 메뉴",
-                value=st.session_state.get(f"{meal_type}_input", ""), # Get current value from session state
-                key=f"{meal_type}_input_widget", # Unique key for the widget instance
+                value=st.session_state.get(f"{meal_type}_input", ""), 
+                key=f"{meal_type}_input_widget", 
                 placeholder="예: 계란후라이 2개"
             )
 
         with cols[1]:
-            st.write("") # Add some vertical space for button alignment
             st.write("")
-            # Check if there's any text in the current meal input before showing "반찬 추천받기"
+            st.write("")
             if st.session_state.get(f"{meal_type}_input", "").strip():
                 main_dish = st.session_state[f"{meal_type}_input"].split(",")[0].strip()
                 if st.button("반찬 추천받기", key=f"{meal_type}_btn", use_container_width=True):
-                    # Clear previous side dish recommendations for this meal type
                     st.session_state.recommendations[meal_type] = None
-                    st.session_state.side_dish_active = meal_type # Set this meal type as active for display
-                    # Fetch side dish recommendations
+                    st.session_state.side_dish_active = meal_type
                     recommendations = get_side_dish_recommission(main_dish)
                     st.session_state.recommendations[meal_type] = recommendations
 
-    # Display recommended side dishes if active
     active_meal_type = st.session_state.side_dish_active
     if active_meal_type:
         label = meal_labels[meal_types.index(active_meal_type)]
         st.markdown(f"**{label} 추천 반찬**")
         
-        # Show loading state for side dishes
         if st.session_state.recommendations.get(active_meal_type) is None:
             emojis = ["🍰", "🍩", "🍪", "🍣", "🍕", "🍔", "🥞", "🧁", "🍦", "🍎"]
             loading_emoji = random.choice(emojis)
             st.info(f"반찬 추천을 준비 중입니다 . . . {loading_emoji} {loading_emoji}")
         
-        # Display actual recommendations
         elif st.session_state.recommendations.get(active_meal_type):
             cols = st.columns(3)
             for idx, rec in enumerate(st.session_state.recommendations[active_meal_type]):
                 with cols[idx]:
                     st.write(f"- {rec}")
-                    # Button to add recommended side dish to the meal input
                     st.button(
                         f"추가하기 {idx+1}",
                         key=f"add_side_dish_{active_meal_type}_{idx}",
                         on_click=update_meal_input,
-                        args=(active_meal_type, rec), # Pass meal type and selected dish
+                        args=(active_meal_type, rec),
                     )
         else:
             st.warning("추천 반찬을 찾지 못했습니다.")
 
-    # Section for "영양 분석 & 식단 추천"
     col_btn, col_check = st.columns([4, 1])
     with col_btn:
         analyze_clicked = st.button("영양 분석 & 식단 추천")
@@ -495,47 +444,40 @@ def main():
         loading_placeholder.info(f"영양 분석 중입니다 . . . {loading_emoji} {loading_emoji}")
         
         for meal_type in meal_types:
-            # Get the current value from the session state for analysis
             current_input_value = st.session_state.get(f"{meal_type}_input", "").strip()
             if current_input_value:
                 registered_meals[meal_type] = True
-                # Split the input string into individual food items
                 food_list = [f.strip() for f in current_input_value.split(",") if f.strip()]
                 meal_total = {"calories": 0, "protein": 0, "carbs": 0, "fat": 0}
                 
-                # Fetch nutrition for each food item
                 for food in food_list:
                     nutrition = get_nutrition_info(food)
                     if nutrition:
                         for key in meal_total:
                             meal_total[key] += float(nutrition.get(key, 0))
                 
-                # Add meal's total nutrition to overall daily total
                 for key in total_nutrition:
                     total_nutrition[key] += meal_total[key]
                 meal_details.append((meal_type, meal_total))
         
-        loading_placeholder.empty() # Clear loading message after analysis
+        loading_placeholder.empty()
 
-        # Calculate remaining nutrition based on daily goals
         remaining = {
             nut: round1(DAILY_GOAL[nut] - total_nutrition[nut])
             for nut in DAILY_GOAL
         }
         
-        # Determine which meal type to recommend for (e.g., next unfulfilled meal)
-        rec_meal_type = "general" # Default recommendation type
+        rec_meal_type = "general"
         if registered_meals["breakfast"] and not registered_meals["lunch"]:
             rec_meal_type = "lunch"
         elif registered_meals["breakfast"] and registered_meals["lunch"] and not registered_meals["dinner"]:
             rec_meal_type = "dinner"
         elif all(registered_meals.values()):
-            rec_meal_type = "completed" # All meals registered, no more healthy recommendations
+            rec_meal_type = "completed"
 
         st.divider()
         st.subheader("📊 영양 분석 결과")
         if meal_details:
-            # Display nutritional breakdown for each entered meal
             cols = st.columns(len(meal_details))
             for idx, (col, (meal_type, nutrition)) in enumerate(zip(cols, meal_details)):
                 with col:
@@ -548,7 +490,6 @@ def main():
             st.info("아직 입력된 식사가 없습니다.")
         
         st.divider()
-        # Display total intake and remaining daily nutrition
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("### 총 섭취량")
@@ -566,11 +507,9 @@ def main():
         st.divider()
         st.subheader("🍱 한 끼 식단 추천")
         
-        # Logic for meal recommendations
         if rec_meal_type == "completed" and not cheat_mode:
             st.info("오늘은 식사를 모두 마쳐서 추천이 없습니다. 내일도 맛있는 한 끼 되세요!")
         else:
-            # Get meal recommendations from GPT
             recommendations = get_recommendations_from_gpt(remaining, rec_meal_type, cheat_mode)
             if recommendations:
                 if cheat_mode:
@@ -581,10 +520,9 @@ def main():
                 cols = st.columns(len(recommendations))
                 for idx, (col, rec) in enumerate(zip(cols, recommendations)):
                     with col:
-                        # Use expanders for cleaner presentation of recommendations
                         with st.expander(f"추천 {idx+1}: {rec.get('name', f'추천 {idx+1}')}", expanded=True):
                             st.write("메뉴:")
-                            for item in rec.get('menu', []): # Ensure 'menu' key exists
+                            for item in rec.get('menu', []):
                                 st.write(f"- {item.get('name', 'N/A')} ({round1(item.get('calories', 0))}kcal, 단백질 {round1(item.get('protein', 0))}g, 탄수화물 {round1(item.get('carbs', 0))}g, 지방 {round1(item.get('fat', 0))}g)")
                             st.markdown(f"""
 **영양소 총합**  
@@ -594,10 +532,8 @@ def main():
 - 지방: {round1(rec.get('total_fat', 0))}g
 """)
 
-                            # Define callback function for adding recommended meal
                             def add_recommended_meal_callback(rec_menu_list):
                                 target_meal_type = None
-                                # Find the next available meal slot (lunch or dinner)
                                 if not registered_meals["lunch"]:
                                     target_meal_type = "lunch"
                                 elif not registered_meals["dinner"]:
@@ -607,7 +543,6 @@ def main():
                                     menu_str = ", ".join([item.get("name", "") for item in rec_menu_list if item.get("name")])
                                     current_input = st.session_state.get(f"{target_meal_type}_input", "").strip()
                                     
-                                    # Prevent adding if the exact combination is already present
                                     if menu_str not in current_input:
                                         new_input = f"{current_input}, {menu_str}".strip(", ")
                                         st.session_state[f"{target_meal_type}_input"] = new_input
@@ -620,7 +555,7 @@ def main():
                                 f"추천 {idx+1} 식단 추가",
                                 key=f"add_rec_meal_{idx}",
                                 on_click=add_recommended_meal_callback,
-                                args=(rec['menu'],), # Pass the menu list from the recommendation
+                                args=(rec['menu'],),
                             )
             else:
                 st.warning("조건에 맞는 추천을 찾지 못했습니다.")
