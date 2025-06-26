@@ -13,6 +13,6 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: streamlitapp
+    app: nutrition-app
   externalIPs:
     - 13.124.198.232
