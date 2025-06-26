@@ -330,7 +330,13 @@ def load_and_populate_meals():
         if response.status_code == 200:
             meals_from_api = response.json()
             
-            # Create a temporary dictionary to build up input strings
+            # Mapping Korean meal types to English keys for session state
+            meal_type_map = {
+                "아침": "breakfast",
+                "점심": "lunch",
+                "저녁": "dinner"
+            }
+
             temp_meal_inputs = {
                 "breakfast": [],
                 "lunch": [],
@@ -338,10 +344,14 @@ def load_and_populate_meals():
             }
 
             for meal in meals_from_api:
-                meal_type = meal.get("meal_type")
+                korean_meal_type = meal.get("meal_type")
                 food_name = meal.get("food_name")
-                if meal_type in temp_meal_inputs and food_name:
-                    temp_meal_inputs[meal_type].append(food_name)
+                
+                # Convert Korean meal type to English key
+                english_meal_type = meal_type_map.get(korean_meal_type)
+
+                if english_meal_type in temp_meal_inputs and food_name:
+                    temp_meal_inputs[english_meal_type].append(food_name)
             
             # Join the collected food names and update session state
             st.session_state.breakfast_input = ", ".join(temp_meal_inputs["breakfast"])
