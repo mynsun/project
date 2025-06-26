@@ -26,8 +26,8 @@ services:
       - "3000:3000"
     networks:
       - app-network
-    depends_on:
-      - fastapi
+    # depends_on:
+    #   - fastapi
     env_file:
       - ./.env
 
