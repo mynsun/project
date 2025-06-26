@@ -1,7 +1,7 @@
 .PHONY: build run stop logs clean push
 
-STREAMLIT_IMAGE_FULL_NAME = mynsunxx/streamlitapp:latest
-FASTAPI_IMAGE_FULL_NAME = mynsunxx/fastapi-backend:latest
+STREAMLIT_IMAGE_FULL_NAME = mynsun/streamlitapp:latest
+FASTAPI_IMAGE_FULL_NAME = mynsun/fastapi-backend:latest
 
 build:
 	docker-compose build

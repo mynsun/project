@@ -1,17 +1,17 @@
 version: '3.7'
 
 services:
-  streamlit-app:
+  streamlitapp:
     build:
       context: ./streamlit
-      dockerfile: Dockerfile
     image: mynsun/streamlitapp:latest
     container_name: streamlitapp
     ports:
       - "8501:8501"
-
     env_file:
       - ./.env
+    networks:
+      - app-network
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
 
@@ -19,14 +19,16 @@ services:
 
   fastapi-service:
     build:
-      context: ./fastapi_service 
-      dockerfile: Dockerfile
+      context: ./fastapi_service
     image: mynsun/fastapi-backend:latest
     container_name: fastapi-backend
     ports:
       - "3000:3000"
-
+    networks:
+      - app-network
+    depends_on:
+      - fastapi
     env_file:
-      - ./.env 
-    environment:
+      - ./.env
+      
     restart: always

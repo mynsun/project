@@ -7,8 +7,8 @@ on:
 env:
   DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_PASSWORD }}
-  STREAMLIT_IMAGE_NAME: mynsunxx/streamlitapp
-  FASTAPI_IMAGE_NAME: mynsunxx/fastapi-backend
+  STREAMLIT_IMAGE_NAME: mynsun/streamlitapp
+  FASTAPI_IMAGE_NAME: mynsun/fastapi-backend
   EC2_HOST: ${{ secrets.HOST }}
   EC2_USERNAME: ${{ secrets.USERNAME }}
   EC2_KEY: ${{ secrets.KEY }}
