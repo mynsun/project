@@ -7,7 +7,7 @@ on:
 env:
   DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_PASSWORD }}
-  DOCKER_IMAGE_NAME: mynsunxx/streamlitapp
+  DOCKER_IMAGE_NAME: mynsun/streamlitapp
   EC2_HOST: ${{ secrets.HOST }}
   EC2_USERNAME: ${{ secrets.USERNAME }}
   EC2_KEY: ${{ secrets.KEY }}
@@ -16,7 +16,7 @@ env:
 
 jobs:
   build-push-deploy:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
@@ -34,37 +34,31 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: . 
-          push: true 
+          context: .
+          push: true
           tags: ${{ env.DOCKER_IMAGE_NAME }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Deploy to EC2 (SSH)
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ env.HOST }}
-          username: ${{ env.USERNAME }}
-          key: ${{ env.KEY }}
-          port: ${{ env.PORT }}
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USERNAME }}
+          key: ${{ env.EC2_KEY }}
+          port: ${{ env.EC2_PORT }}
           envs: OPENAI_API_KEY
           script: |
             echo "--- Pulling Latest App Image ---"
             docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest
-
             echo "--- Stopping and Removing Old App Container ---"
-            docker stop streamlit_app || true
-            docker rm streamlit_app || true
-
+            docker stop streamlitapp || true
+            docker rm streamlitapp || true
             echo "--- Running New App Container ---"
             docker run -d \
               --restart always \
-              --name streamlit_app \
+              --name streamlitapp \
               -p 8501:8501 \
               -e OPENAI_API_KEY=$OPENAI_API_KEY \
               ${{ env.DOCKER_IMAGE_NAME }}:latest
-
             echo "--- Cleaning up unused Docker images ---"
             docker system prune -f
-
             echo "Deployment complete!"
