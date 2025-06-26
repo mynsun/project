@@ -22,3 +22,4 @@ clean:
 push: build
 	docker push $(STREAMLIT_IMAGE_FULL_NAME)
 	docker push $(FASTAPI_IMAGE_FULL_NAME)
+
