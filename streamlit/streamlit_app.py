@@ -369,10 +369,10 @@ def main():
                 unsafe_allow_html=True
             )
 
-    with col_load_api:
-        # FastAPI에서 음식 데이터를 불러오는 임시 버튼 (테스트용)
-        if st.button("FastAPI에서 음식 불러오기 (임시)", key="load_from_fastapi_temp"):
-            load_and_populate_meals()
+    # with col_load_api:
+    #     # FastAPI에서 음식 데이터를 불러오는 임시 버튼 (테스트용)
+    #     if st.button("FastAPI에서 음식 불러오기 (임시)", key="load_from_fastapi_temp"):
+    #         load_and_populate_meals()
 
     if 'recommendations' not in st.session_state:
         st.session_state.recommendations = {}
