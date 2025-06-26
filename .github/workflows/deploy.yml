@@ -63,57 +63,31 @@ jobs:
           port: ${{ env.EC2_PORT }}
           envs: OPENAI_API_KEY
           script: |
-            echo "--- SSH: Deployment script started on EC2 ---"
-            echo "--- SSH: Current user: $(whoami) ---"
-            echo "--- SSH: Initial directory: $(pwd) ---"
-            
-            PROJECT_DIR="/home/${{ env.EC2_USERNAME }}/project" # <--- 이 경로를 EC2의 실제 경로로 수정해야 합니다!
+            PROJECT_DIR="/home/${{ env.EC2_USERNAME }}/project"
 
-            echo "--- SSH: Attempting to change directory to $PROJECT_DIR ---"
             if [ ! -d "$PROJECT_DIR" ]; then
-              echo "Error: Project directory '$PROJECT_DIR' does not exist."
-              echo "Ensure you have cloned your repository to this path on EC2."
-              exit 1 
+              exit 1
             fi
-            cd "$PROJECT_DIR" || { echo "Error: Failed to change directory to '$PROJECT_DIR'. Check path or permissions."; exit 1; }
-            echo "--- SSH: Changed directory to: $(pwd) ---"
-            
-            echo "--- SSH: Checking Docker daemon status ---"
+            cd "$PROJECT_DIR" || { exit 1; }
+
             if ! systemctl is-active --quiet docker; then
-              echo "Error: Docker daemon is not running. Attempting to start Docker service..."
-              sudo systemctl start docker || { echo "Error: Failed to start Docker daemon. Check 'sudo systemctl status docker' on EC2."; exit 1; }
-              sleep 5 
-              echo "--- SSH: Docker daemon started. Waiting 5s... ---"
+              sudo systemctl start docker || { exit 1; }
+              sleep 5
             fi
-            echo "--- SSH: Docker daemon is active ---"
 
             if ! id -nG "$USER" | grep -qw "docker"; then
-              echo "Warning: User '$USER' is not in 'docker' group. Attempting to add user to group..."
-              sudo usermod -aG docker "$USER" || { echo "Error: Failed to add user to docker group. Check user permissions."; exit 1; }
-              echo "IMPORTANT: User added to 'docker' group. Subsequent 'docker' commands might fail in this session without re-login."
+              sudo usermod -aG docker "$USER" || { exit 1; }
             fi
-            echo "--- SSH: User '$USER' is in 'docker' group (or attempted to add) ---"
 
-            echo "--- SSH: Pulling latest Docker images from Docker Hub ---"
-            docker-compose pull || { echo "Error: Failed to pull images via docker-compose pull. Check Docker Hub auth or image names/tags. Are images public or PAT has pull rights?"; exit 1; }
-            echo "--- SSH: Images pulled successfully ---"
+            docker-compose pull || { exit 1; }
 
-            echo "--- SSH: Stopping and removing old Docker Compose services (if any) ---"
-            docker-compose down || echo "Warning: docker-compose down failed. This is often normal if no services were running. Continuing..."
+            docker-compose down || true
             
-            echo "--- SSH: Starting new Docker Compose services with --force-recreate ---"
-            docker-compose up -d --force-recreate || { echo "Error: Failed to start docker-compose services. Check 'docker-compose logs' for details on container startup failures."; exit 1; }
-            echo "--- SSH: Docker Compose services started successfully ---"
+            docker-compose up -d --force-recreate || { exit 1; }
 
-            echo "--- SSH: Listing all Docker containers (running and exited) ---"
-            docker ps -a || echo "Error: Failed to list all containers with 'docker ps -a'. Permissions or Docker daemon issue?"
-            
-            echo "--- SSH: Checking logs for Streamlit app container (last 50 lines) ---"
-            docker logs nutrition_streamlit_app --tail 50 || echo "Warning: Could not get logs for streamlit app. Container might not exist or logs too short."
-            echo "--- SSH: Checking logs for FastAPI service container (last 50 lines) ---"
-            docker logs nutrition_fastapi_backend --tail 50 || echo "Warning: Could not get logs for fastapi service. Container might not exist or logs too short."
+            docker ps -a
 
-            echo "--- SSH: Cleaning up unused Docker images ---"
-            docker system prune -f || echo "Warning: Docker system prune failed. Disk space might be an issue."
+            docker logs nutrition_streamlit_app --tail 50 || true
+            docker logs nutrition_fastapi_backend --tail 50 || true
 
-            echo "--- SSH: Deployment script finished successfully ---"
+            docker system prune -f || true
