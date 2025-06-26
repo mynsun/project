@@ -38,3 +38,8 @@ async def register_meal(data: MealData):
 @app.get("/load-meal")
 async def load_meal():
     return [meal.dict() for meal in meals]
+
+@app.post("/reset-meals")
+async def reset_meals():
+    meals.clear()
+    return {"message": "리셋 완료!"}
