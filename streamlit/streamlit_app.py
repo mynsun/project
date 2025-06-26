@@ -364,7 +364,7 @@ def main():
         if st.button("📸 사진으로 음식 등록", key="photo_upload"):
             st.markdown(
                 """
-                <meta http-equiv="refresh" content="0; url='http://15.164.56.89:8501/'" />
+                <meta http-equiv="refresh" content="0; url='http://15.164.56.89:30800/'" />
                 """,
                 unsafe_allow_html=True
             )
