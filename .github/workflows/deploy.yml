@@ -63,7 +63,7 @@ jobs:
           port: ${{ env.EC2_PORT }}
           envs: OPENAI_API_KEY
           script: |
-            PROJECT_DIR="/home/${{ env.EC2_USERNAME }}/project"
+            PROJECT_DIR="/work/project"
 
             if [ ! -d "$PROJECT_DIR" ]; then
               exit 1
