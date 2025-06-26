@@ -29,7 +29,7 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DOCKER_HUB_USERNAME }}
+          username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_HUB_TOKEN }}
 
       - name: Build and Push Streamlit Docker Image
@@ -39,6 +39,7 @@ jobs:
           dockerfile: Dockerfile
           push: true
           tags: ${{ env.STREAMLIT_IMAGE_NAME }}:latest
+          no-cache: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -49,6 +50,7 @@ jobs:
           dockerfile: Dockerfile
           push: true
           tags: ${{ env.FASTAPI_IMAGE_NAME }}:latest
+          no-cache: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -61,18 +63,46 @@ jobs:
           port: ${{ env.EC2_PORT }}
           envs: OPENAI_API_KEY
           script: |
-            echo "--- Navigating to project directory on EC2 ---"
+            echo "--- SSH: Starting deployment script on EC2 ---"
+            echo "--- SSH: Current directory: $(pwd) ---"
+            
+            PROJECT_DIR="/home/${{ env.EC2_USERNAME }}/project" # <--- 이 경로를 EC2의 실제 프로젝트 경로로 수정!
 
-            echo "--- Pulling Latest Streamlit & FastAPI App Images ---"
-            docker pull ${{ env.STREAMLIT_IMAGE_NAME }}:latest
-            docker pull ${{ env.FASTAPI_IMAGE_NAME }}:latest
+            if [ ! -d "$PROJECT_DIR" ]; then
+              echo "Error: Project directory $PROJECT_DIR does not exist. Cloned the repository to EC2?"
+              exit 1
+            fi
+            cd "$PROJECT_DIR" || { echo "Error: Failed to change directory to $PROJECT_DIR"; exit 1; }
+            echo "--- SSH: Changed directory to: $(pwd) ---"
 
-            echo "--- Stopping and Recreating Docker Compose Services ---"
+            echo "--- SSH: Checking Docker daemon status ---"
+            if ! systemctl is-active --quiet docker; then
+              echo "Error: Docker daemon is not running. Starting Docker service..."
+              sudo systemctl start docker || { echo "Error: Failed to start Docker daemon"; exit 1; }
+              sleep 5
+            fi
+            echo "--- SSH: Docker daemon is active ---"
 
-            docker-compose down
-            docker-compose up -d --force-recreate
+            if ! id -nG "$USER" | grep -qw "docker"; then
+              echo "Warning: User $USER is not in 'docker' group. Adding user to group..."
+              sudo usermod -aG docker "$USER" || { echo "Error: Failed to add user to docker group"; exit 1; }
+              echo "IMPORTANT: SSH session might need to be re-established for group changes to take effect."
+              echo "Consider restarting your EC2 instance or re-running deployment."
+            fi
 
-            echo "--- Cleaning up unused Docker images ---"
-            docker system prune -f
+            echo "--- SSH: Pulling latest Docker images ---"
+            docker pull ${{ env.STREAMLIT_IMAGE_NAME }}:latest || { echo "Error: Failed to pull Streamlit image"; exit 1; }
+            docker pull ${{ env.FASTAPI_IMAGE_NAME }}:latest || { echo "Error: Failed to pull FastAPI image"; exit 1; }
+            echo "--- SSH: Images pulled successfully ---"
 
-            echo "Deployment complete!"
+            echo "--- SSH: Stopping and removing old Docker Compose services ---"
+            docker-compose down || echo "Warning: docker-compose down failed, maybe no services running. Continuing..."
+            
+            echo "--- SSH: Starting new Docker Compose services ---"
+            docker-compose up -d --force-recreate || { echo "Error: Failed to start docker-compose services"; exit 1; }
+            echo "--- SSH: Docker Compose services started ---"
+
+            echo "--- SSH: Checking running containers ---"
+            docker ps -a || echo "Error: Failed to list all containers."
+
+            echo "--- SSH: Deployment script finished ---"
