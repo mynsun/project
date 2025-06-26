@@ -2,7 +2,7 @@ FROM python:3.9-slim-buster
 
 WORKDIR /app
 
-COPY requirements.txt . # <--- 이 부분을 수정합니다.
+COPY ../requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
