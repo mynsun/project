@@ -336,8 +336,6 @@ def load_and_populate_meals():
             st.session_state.lunch_input = ", ".join(temp_meal_inputs["lunch"])
             st.session_state.dinner_input = ", ".join(temp_meal_inputs["dinner"])
 
-        # else:
-        #     st.error(f"서버 오류 발생: {response.status_code}. 음식 목록을 불러오지 못했습니다.")
     except requests.exceptions.RequestException as e:
         st.error(f"서버 요청 실패: {e}. FastAPI 서버가 실행 중인지 확인하세요.")
 
@@ -368,11 +366,6 @@ def main():
                 """,
                 unsafe_allow_html=True
             )
-
-    # with col_load_api:
-    #     # FastAPI에서 음식 데이터를 불러오는 임시 버튼 (테스트용)
-    #     if st.button("FastAPI에서 음식 불러오기 (임시)", key="load_from_fastapi_temp"):
-    #         load_and_populate_meals()
 
     if 'recommendations' not in st.session_state:
         st.session_state.recommendations = {}
